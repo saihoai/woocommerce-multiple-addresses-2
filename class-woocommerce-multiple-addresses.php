@@ -356,6 +356,11 @@ class WC_Multiple_addresses {
 	public function multiple_shipping_addresses() {
 		global $woocommerce;
 
+		if( !$woocommerce )
+		{
+			return;
+		}
+
 		$GLOBALS['wma_current_address'] = '';
 
 		if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '<' ) ) {
@@ -467,30 +472,32 @@ class WC_Multiple_addresses {
 			<?php endif; ?>
 
 			tmpl += '</div>';
-			jQuery(".add_address").click(function (e) {
-				e.preventDefault();
 
-				jQuery("#addresses").append(tmpl);
+			<?php 
+				wp_add_inline_script( self::$plugin_slug . '-plugin-script', 'jQuery(document).ready(function () {
 
-				jQuery('html,body').animate({
-						scrollTop: jQuery('#addresses .shipping_address:last').offset().top},
-					'slow');
-			});
+				jQuery(".add_address").click(function (e) {
+					e.preventDefault();
 
-			jQuery(".delete").live("click", function (e) {
-				e.preventDefault();
-				jQuery(this).parents("div.address_block").remove();
-			});
+					jQuery("#addresses").append(tmpl);
 
-			jQuery(document).ready(function () {
+					jQuery("html,body").animate({
+							scrollTop: jQuery("#addresses .shipping_address:last").offset().top},
+						"slow");
+				});
+
+				jQuery(".delete").live("click", function (e) {
+					e.preventDefault();
+					jQuery(this).parents("div.address_block").remove();
+				});
 
 				jQuery(document).on("click", ".default_shipping_address", function () {
 					if (this.checked) {
 						jQuery("input.default_shipping_address").not(this).removeAttr("checked");
 						jQuery("input.default_shipping_address").not(this).val("false");
 						jQuery("input.hidden_default_shipping_address").val("false");
-						jQuery(this).next().val('true');
-						jQuery(this).val('true');
+						jQuery(this).next().val("true");
+						jQuery(this).val("true");
 					}
 					else {
 						jQuery("input.default_shipping_address").val("false");
@@ -509,7 +516,10 @@ class WC_Multiple_addresses {
 					});
 					return valid;
 				});
-			});
+			});');
+			?>
+
+			
 		</script>
 	<?php
 	}
